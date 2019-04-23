@@ -699,8 +699,10 @@ Turn on your Thin Client machine. As this computer is not assigned to a node yet
 ![Thin Client Info](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/thin-client-info.png)
 Change to
 To add the thin client computer to a node, open the ltsp-cluster center and go to the tab `Nodes`. Change to AppServ01 node, select the computer on the list and click on Add to AppServ01:
+```
 ![Step 1](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/add to app 1.png)
 ![Step 2](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/move to app 2.png)
+```
 [Click here](http://google.com) for more detailed instructions.
 
 #Troubleshoot
