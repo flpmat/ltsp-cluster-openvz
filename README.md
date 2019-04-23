@@ -140,7 +140,7 @@ Add these two lines to `/etc/vz/conf/ve.basic.conf-sample`:
 ```
 CONFIG_CUSTOMIZED="yes"
 VZHOSTBR="br0"
-``
+```
 Add a bridge to `/etc/network/interfaces` (eth1 should be the second network card of your VBox machine, the one that is connected to the host-only network):
 ```
 # The LAN interface
