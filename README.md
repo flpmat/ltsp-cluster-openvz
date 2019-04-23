@@ -159,7 +159,7 @@ Add these two lines to `/etc/rc.local`:
 ```
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-``
+```
 Reboot to make sure everything works.
 ## Create ltsp-root01 (Terminal root)
 Create the VZ: 
@@ -374,7 +374,7 @@ Move to the new directory and create tables in database.
 cd /usr/share/ltsp-cluster-control/DB/
 cat schema.sql functions.sql | psql -h localhost ltsp ltsp
 Password for user ltsp: 
-``
+```
 Now you have to act as a root user and move to the /root directory.
 ```
 sudo su
@@ -383,6 +383,7 @@ cd /root
 Get two files for database.
 ```
 wget http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-control\/download/head%3A/controlcenter.py-20090118065910-j5inpmeqapsuuepd-3/control-center.py
+```
 ```
 wget http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-control\/download/head%3A/rdpldm.config-20090430131602-g0xccqrcx91oxsl0-1/rdp%2Bldm.config
 ```
@@ -397,7 +398,6 @@ db_user="ltsp"
 db_password="ltsp"
 db_host="localhost"
 db_database="ltsp"
-
 ```
 Install python postgresql support: 
 ```
