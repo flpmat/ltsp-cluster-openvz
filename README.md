@@ -84,7 +84,7 @@ Reset GRUB:
 ```
 sudo update-grub2
 sudo reboot
-``
+```
 Install vzctl, bridge-utils, bzr and plymouth-theme-ubuntu: 
 ```
 apt-get install vzctl bridge-utils bzr plymouth-theme-ubuntu-logo debootstrap
