@@ -3,12 +3,11 @@
 # Table of Contents
 1. [LTSP-Cluster](#LSTP-Cluster)
 2. [Host Instalation](#Host Instalation)
-3. [Create ltsp-root01 (Terminal root)](#Create ltsp-root01 (Terminal root))
-4. [Create ltsp-control01 (Control center)](#Create ltsp-control01 (Control center))
-5. [Create ltsp-loadbalancer01 (Load Balancer)](#Create ltsp-loadbalancer01 (Load Balancer))
-6. [Create ltsp-appserv01 (First Application Server)](#Create ltsp-appserv01 (First Application Server))
+3. [Create ltsp-root01 (Terminal root)](#Create%20ltsp-root01%20(Terminal%20root))
+4. [Create ltsp-control01 (Control center)](#Create%20ltsp-control01%20(Control%20center))
+5. [Create ltsp-loadbalancer01 (Load Balancer)](#Create%20ltsp-loadbalancer01%20(Load%20Balancer))
+6. [Create ltsp-appserv01 (First Application Server)](#Create%20ltsp-appserv01%20(First%20Application%20Server))
 7. [Troubleshoot](#Troubleshoot)
-
 
 # LSTP-Cluster
 LTSP-Cluster is a set of LTSP plugins and client-side tools that allows you to deploy and centrally manage large numbers of thin-clients. It allows you to run thousands of thin-clients that are able to connect to a load-balanced cluster of GNU/Linux and-or Microsoft Windows terminal servers.
