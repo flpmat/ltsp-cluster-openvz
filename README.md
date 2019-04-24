@@ -9,27 +9,26 @@
 LTSP-Cluster is a set of LTSP plugins and client-side tools that allows you to deploy and centrally manage large numbers of thin-clients. It allows you to run thousands of thin-clients that are able to connect to a load-balanced cluster of GNU/Linux and-or Microsoft Windows terminal servers.
 
 Some of the LTSP-Cluster Features are:
-
 Central Configuration web interface
 Load balanced thin clients across multiple servers
 Complete autologin support with account creation
 Store hardware information for all clients in the control center
-In this tutorial, basic setup of LTSP-Cluster will be installed. For this purpose, we will use VirtualBox where two x86_64/amd64 Ubuntu servers are configured: the first one will be the root server and the second one the application server.
+
+In this tutorial, a basic setup of LTSP-Cluster will be installed. For this purpose, we will use VirtualBox where one x86_64/amd64 Ubuntu servers are configured as both the root server and application server.
 
 Upfront to this tutorial, you must set a host network. Go to File > Host Network Manager > Create and set vboxnet0 like the image below:
 
-vboxnet0
+VHOST IMAGE
 
 Now, create one VirtualBox machine with one network interface connected to NAT and another network interface host-only.
 
-## Host installation
+# Host installation
 
 Install Ubuntu server (select the OpenSSH server role if you want SSH access). Once installed, reboot and make sure your system is up to date:
 ```
 sudo apt-get update && sudo apt-get dist-upgrade
 ```
-
-### Installing OpenVZ on Ubuntu 14.04
+## Installing OpenVZ on Ubuntu 14.04
 
 Switch to root user:
 ```
@@ -47,24 +46,24 @@ apt-key add archive.key
 ```
 Install OpenVZ kernel:
 ```
-sudo apt-get update
+apt-get update
 apt-get install linux-image-openvz-amd64
 ```
+Exit sudo.
 
-### Setting up Kernel parameters
+## Setting up Kernel parameters
 
 Make sure you have added the following kernel parameters before logging into vz kernel:
 ```
 vi /etc/sysctl.conf
 ```
 Add the following lines:
-```
-# On Hardware Node we generally need
-# packet forwarding enabled and proxy arp disabled
-net.ipv4.ip_forward = 1
-net.ipv6.conf.default.forwarding = 1
-net.ipv6.conf.all.forwarding = 1
-net.ipv4.conf.default.proxy_arp = 0
+># On Hardware Node we generally need
+># packet forwarding enabled and proxy arp disabled
+>net.ipv4.ip_forward = 1
+>net.ipv6.conf.default.forwarding = 1
+>net.ipv6.conf.all.forwarding = 1
+>net.ipv4.conf.default.proxy_arp = 0
 
 # Enables source route verification
 net.ipv4.conf.all.rp_filter = 1
