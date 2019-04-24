@@ -58,12 +58,13 @@ Make sure you have added the following kernel parameters before logging into vz 
 vi /etc/sysctl.conf
 ```
 Add the following lines:
-># On Hardware Node we generally need
-># packet forwarding enabled and proxy arp disabled
->net.ipv4.ip_forward = 1
->net.ipv6.conf.default.forwarding = 1
->net.ipv6.conf.all.forwarding = 1
->net.ipv4.conf.default.proxy_arp = 0
+```
+# On Hardware Node we generally need
+# packet forwarding enabled and proxy arp disabled
+net.ipv4.ip_forward = 1
+net.ipv6.conf.default.forwarding = 1
+net.ipv6.conf.all.forwarding = 1
+net.ipv4.conf.default.proxy_arp = 0
 
 # Enables source route verification
 net.ipv4.conf.all.rp_filter = 1
@@ -75,7 +76,7 @@ kernel.sysrq = 1
 net.ipv4.conf.default.send_redirects = 1
 net.ipv4.conf.all.send_redirects = 0
 ```
-### Remove all non-OpenVZ kernels
+## Remove all non-OpenVZ kernels
 
 To list kernels:
 ```
@@ -92,13 +93,13 @@ sudo reboot
 ```
 Install vzctl, bridge-utils, bzr and plymouth-theme-ubuntu: 
 ```
-apt-get install vzctl bridge-utils bzr plymouth-theme-ubuntu-logo debootstrap
+sudo apt-get install vzctl bridge-utils bzr plymouth-theme-ubuntu-logo debootstrap
 ```
 Reboot:
 ```
 sudo reboot
 ```
-### Creating the OpenVZ templates
+## Creating the OpenVZ templates
 Get the template generator script:
 ```
 bzr get lp:~ubuntu-openvz-dev/openvz-tools/vz-utils
@@ -107,16 +108,16 @@ cd vz-utils/scripts/
 Then run:
 ```
 python vz-template-creator.py -v -a amd64 -D trusty -m http://archive.ubuntu.com/ubuntu ubuntu-14.04-amd64-server (if the host is amd64, use i386 otherwise)
-python vz-template-creator.py -v -a i386 -D xenial -m http://archive.ubuntu.com/ubuntu ubuntu-16.04-i386-server (this one is i386 in all cases)
+python vz-template-creator.py -v -a i386 -D trusty -m http://archive.ubuntu.com/ubuntu ubuntu-16.04-i386-server (this one is i386 in all cases)
 ```
-### Configure networking
+## Configure networking
 Create `/etc/vz/vznet.conf`:
-```
+```sh
 #!/bin/sh
 EXTERNAL_SCRIPT="/usr/local/bin/vznetaddbr"
 ```
 Create `/usr/local/bin/vznetaddbr` and make it executable:
-```
+```sh
 #!/bin/bash
 CTID=$VEID
 CONFIGFILE=/etc/vz/conf/$CTID.conf
@@ -142,7 +143,7 @@ To make `/usr/local/binvznetaddbr` executable:
 chmod +x /usr/local/binvznetaddbr
 ```
 Add these two lines to `/etc/vz/conf/ve.basic.conf-sample`:
-```
+```conf
 CONFIG_CUSTOMIZED="yes"
 VZHOSTBR="br0"
 ```
@@ -166,7 +167,8 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 ```
 Reboot to make sure everything works.
-## Create ltsp-root01 (Terminal root)
+
+# Create ltsp-root01 (Terminal root)
 Create the VZ: 
 ```
 vzctl create 101 --ostemplate ubuntu-9.04-i386-server --hostname ltsp-root01 -config basic
