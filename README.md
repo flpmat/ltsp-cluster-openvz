@@ -1,7 +1,7 @@
 # LSTP-Cluster + OpenVZ Tutorial
 
 # Table of Contents
-1. [LTSP-Cluster](# LSTP-Cluster)
+1. [LTSP-Cluster](#LSTP-Cluster)
 2. [Example2](#example2)
 3. [Third Example](#third-example)
 
