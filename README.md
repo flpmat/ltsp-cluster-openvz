@@ -2,7 +2,7 @@
 
 # Table of Contents
 1. [LTSP-Cluster](#LSTP-Cluster)
-2. [Example2](#example2)
+2. [Host Instalation](#Host-Instalation)
 3. [Third Example](#third-example)
 
 # LSTP-Cluster
@@ -22,7 +22,7 @@ VHOST IMAGE
 
 Now, create one VirtualBox machine with one network interface connected to NAT and another network interface host-only.
 
-# Host installation
+# Host Installation
 
 Install Ubuntu server (select the OpenSSH server role if you want SSH access). Once installed, reboot and make sure your system is up to date:
 ```
