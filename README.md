@@ -77,7 +77,6 @@ net.ipv4.conf.default.send_redirects = 1
 net.ipv4.conf.all.send_redirects = 0
 ```
 ## Remove all non-OpenVZ kernels
-
 To list kernels:
 ```
 rpm -qa kernel
@@ -111,13 +110,13 @@ python vz-template-creator.py -v -a amd64 -D trusty -m http://archive.ubuntu.com
 python vz-template-creator.py -v -a i386 -D trusty -m http://archive.ubuntu.com/ubuntu ubuntu-16.04-i386-server (this one is i386 in all cases)
 ```
 ## Configure networking
-Create `/etc/vz/vznet.conf`:
-```sh
+Create `/etc/vz/vznet.conf`and add the following lines:
+```
 #!/bin/sh
 EXTERNAL_SCRIPT="/usr/local/bin/vznetaddbr"
 ```
-Create `/usr/local/bin/vznetaddbr` and make it executable:
-```sh
+Create `/usr/local/bin/vznetaddbr` with the text below and make it executable:
+```
 #!/bin/bash
 CTID=$VEID
 CONFIGFILE=/etc/vz/conf/$CTID.conf
@@ -140,10 +139,10 @@ exit 0
 ```
 To make `/usr/local/binvznetaddbr` executable:
 ```
-chmod +x /usr/local/binvznetaddbr
+sudo chmod +x /usr/local/binvznetaddbr
 ```
 Add these two lines to `/etc/vz/conf/ve.basic.conf-sample`:
-```conf
+```
 CONFIG_CUSTOMIZED="yes"
 VZHOSTBR="br0"
 ```
@@ -171,29 +170,29 @@ Reboot to make sure everything works.
 # Create ltsp-root01 (Terminal root)
 Create the VZ: 
 ```
-vzctl create 101 --ostemplate ubuntu-9.04-i386-server --hostname ltsp-root01 -config basic
+sudo vzctl create 101 --ostemplate ubuntu-9.04-i386-server --hostname ltsp-root01 -config basic
 ```
 Set the VZ name: 
 ```
-vzctl set 101 --name ltsp-root01 --save
+sudo vzctl set 101 --name ltsp-root01 --save
 ```
 Add a network card: 
 ```
-vzctl set ltsp-root01 --netif_add eth0 --save
+sudo vzctl set ltsp-root01 --netif_add eth0 --save
 ```
 Set the diskspace: 
 ```
-vzctl set ltsp-root01 --diskspace 10G --save
+sudo vzctl set ltsp-root01 --diskspace 10G --save
 ```
 Start the VZ:
 ```
-vzctl start ltsp-root01
+sudo vzctl start ltsp-root01
 ```
 Enter the VZ: 
 ```
-vzctl enter ltsp-root01
+sudo vzctl enter ltsp-root01
 ```
-Add these two entries to your sources.list if it do not exist yet:
+Add these two entries to your sources.list if it does not exist yet:
 ```
 deb http://ppa.launchpad.net/stgraber/ubuntu trusty main restricted universe multiverse
 ```
@@ -216,7 +215,7 @@ nameserver 208.67.220.220
 Apply changes with:
 ```
 sudo resolvconf -u
-``
+```
 Update the VZ:
 ```
 sudo apt-get update
@@ -225,11 +224,11 @@ Install tftpd-hpa:
 ```
 sudo apt-get install tftpd-hpa
 ```
-Install ltsp-server isc-dhcp-server: 
+Install ltsp-server and isc-dhcp-server: 
 ```
-apt-get install ltsp-server isc-dhcp-server --no-install-recommends
-``
-We must edit the DHCP server configuration file `/etc/dhcp/dhcpd.conf` adding:
+sudo apt-get install ltsp-server isc-dhcp-server --no-install-recommends
+```
+Now, you must edit the DHCP server configuration file `/etc/dhcp/dhcpd.conf` adding:
 ```
 ddns-update-style none;
 default-lease-time 600;
@@ -253,9 +252,9 @@ Restart isc-dhcp-server:
 ```
 sudo /etc/init.d/isc-dhcp-server restart
 ```
-If the command above fail, you probably have erros on `/etc/default/isc-dhcp-server`. See the log /var/log/syslog. You can also test if the isc-dhcp-server is working properly by lauching the thin client virtual machine (you'll be able to see it getting an IP address in the specified range).
+If the command above fail, you probably have erros on `/etc/default/isc-dhcp-server`. See the log /var/log/syslog. You can also test if the isc-dhcp-server is working properly by lauching a thin client virtual machine (you'll be able to see it getting an IP address in the specified range).
 
-### Build Chroot
+## Build Chroot
 Thin clients need 32-bit chroot. First, make sure you have squashfs-tools and nbd-server installed:
 ```
 sudo apt-get update && sudo apt-get install squashfs-tools 
@@ -265,27 +264,25 @@ Now, build the client:
 ```
 sudo ltsp-build-client --arch i386 --ltsp-cluster --prompt-rootpass --accept-unsigned-packages --extra-mirror http://ppa.launchpad.net/stgraber/ubuntu
 ```
-When asked for ltsp-cluster settings answer as follow.
+When asked for ltsp-cluster settings answer as follow:
 ```
-Configuration of LTSP-Cluster
-NOTE: booleans must be answered as uppercase Y or N
 Server name: 192.168.1.3
 Port (default: 80): 80
 Use SSL [y/N]: N
 Enable hardware inventory [Y/n]: Y
 Request timeout (default: 2): 2
 ```
-Root user passwd for chroot will be asked, too.
+Root user password for chroot will be asked, too.
 ```
 Enter new UNIX password: 
 Retype new UNIX password: 
 passwd: password updated successfully
 ```
-Your answered setup is in this file: `/opt/ltsp/i386/etc/ltsp/getltscfg-cluster.conf`.
+Your answered setup is in this file `/opt/ltsp/i386/etc/ltsp/getltscfg-cluster.conf`.
 
 The VZ is ready, you can exit and continue with the next one.
 
-## Create ltsp-control01 (Control center)
+# Create ltsp-control01 (Control center)
 Create the VZ: 
 ```
 sudo vzctl create 102 --ostemplate ubuntu-14.04-amd64-server --hostname ltsp-control01 -config basic
@@ -338,15 +335,11 @@ Install ltsp-cluster-control postgresql:
 ```
 sudo apt-get install ltsp-cluster-control postgresql --no-install-recommends
 ```
-If you get any error regarding apache2 while installing lts-cluster-control, please try [this](#Apache-Won't-start). After troubleshooting, execute the command below:
+If you get any error regarding apache2 while installing lts-cluster-control, please try [this](#Apache-Won't-start). After troubleshooting, execute the command below to make sure ltsp-cluster-control has installed succesfully:
 ```
 sudo apt-get install --reinstall ltsp-cluster-control postgresql --no-install-recommends
 ```
-Modify program's configuration file. Note: Do not left any empty lines before or after php-tags () - php will not run!
-```
-sudo nano /etc/ltsp/ltsp-cluster-control.config.php
-```
-In this setup we use this one. Note all database related information.
+Modify ltsp-cluster-control's configuration. Open `/etc/ltsp/ltsp-cluster-control.config.php` and make sure it looks like below:
 ```
 <?php
     $CONFIG['save'] = "Save";
@@ -366,7 +359,7 @@ In this setup we use this one. Note all database related information.
     $CONFIG['rootInstall'] = "/usr/share/ltsp-cluster-control/Admin/";
 ?>
 ```
-Create new user for database. Use same passwd as above (db_password = ltsp)
+Create a new user for database. Use same passwd as above (db_password = ltsp)
 ```
 sudo -u postgres createuser -SDRIP ltsp
 Enter password for new role: 
@@ -376,7 +369,7 @@ Create new database.
 ```
 sudo -u postgres createdb ltsp -O ltsp
 ```
-Move to the new directory and create tables in database.
+Move to the new directory and create tables in database. You'll be prompted for the user's password.
 ```
 cd /usr/share/ltsp-cluster-control/DB/
 cat schema.sql functions.sql | psql -h localhost ltsp ltsp
@@ -394,9 +387,8 @@ wget http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-
 ```
 wget http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-control\/download/head%3A/rdpldm.config-20090430131602-g0xccqrcx91oxsl0-1/rdp%2Bldm.config
 ```
-Modify control-center.py file, use same information for database as above.
+Modify `control-center.py` you just downloaded, using the same information for database as below:
 ```
-nano control-center.py
 #/usr/bin/python
 import pgdb, os, sys
 
@@ -414,13 +406,6 @@ Stop Apache2 and install two files.
 ```
 /etc/init.d/apache2 stop
 python control-center.py rdp+ldm.config
-Cleaned status table
-Cleaned log table
-Cleaned computershw table
-Cleaned status table
-Cleaned log table
-Cleaned computershw table
-Regenerated tree
 ```
 Add the following line to the end of /etc/apache2/apache2.conf file:
 ```
@@ -458,7 +443,7 @@ In the tab Nodes, create a new node by clicking the button Create Child and then
 
 The VZ is ready, you can exit and continue with the next one.
 
-## Create ltsp-loadbalancer01 (Load Balancer)
+# Create ltsp-loadbalancer01 (Load Balancer)
 Create the VZ: 
 ```
 sudo vzctl create 103 --ostemplate ubuntu-14.04-amd64-server --hostname ltsp-loadbalancer01 -config basic
