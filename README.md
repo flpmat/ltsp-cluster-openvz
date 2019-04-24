@@ -2,8 +2,13 @@
 
 # Table of Contents
 1. [LTSP-Cluster](#LSTP-Cluster)
-2. [Host Instalation](#Host-Instalation)
-3. [Third Example](#third-example)
+2. [Host Instalation](#Host Instalation)
+3. [Create ltsp-root01 (Terminal root)](#Create ltsp-root01 (Terminal root))
+4. [Create ltsp-control01 (Control center)](#Create ltsp-control01 (Control center))
+5. [Create ltsp-loadbalancer01 (Load Balancer)](#Create ltsp-loadbalancer01 (Load Balancer))
+6. [Create ltsp-appserv01 (First Application Server)](#Create ltsp-appserv01 (First Application Server))
+7. [Troubleshoot](#Troubleshoot)
+
 
 # LSTP-Cluster
 LTSP-Cluster is a set of LTSP plugins and client-side tools that allows you to deploy and centrally manage large numbers of thin-clients. It allows you to run thousands of thin-clients that are able to connect to a load-balanced cluster of GNU/Linux and-or Microsoft Windows terminal servers.
@@ -313,13 +318,13 @@ iface eth0 inet static
  netmask 255.255.255.0
  gateway 192.168.0.1
  ```
-Set the DNS server in /etc/resolvconf/resolv.conf.d/base`
+Set the DNS server in /etc/resolvconf/resolv.conf.d/base`:
 ```
 search lan
 nameserver 208.67.222.222
 nameserver 208.67.220.220
 ```
-Apply change with:
+Apply changes with:
 ```
 sudo resolvconf -u
 ```
@@ -359,35 +364,35 @@ Modify ltsp-cluster-control's configuration. Open `/etc/ltsp/ltsp-cluster-contro
     $CONFIG['rootInstall'] = "/usr/share/ltsp-cluster-control/Admin/";
 ?>
 ```
-Create a new user for database. Use same passwd as above (db_password = ltsp)
+Create a new user for the database. Use the same password as above (db_password = ltsp)
 ```
 sudo -u postgres createuser -SDRIP ltsp
 Enter password for new role: 
 Enter it again:
 ``` 
-Create new database.
+Create a new database.
 ```
 sudo -u postgres createdb ltsp -O ltsp
 ```
-Move to the new directory and create tables in database. You'll be prompted for the user's password.
+Move to the new directory and create tables in database. You'll be prompted for the user's password:
 ```
 cd /usr/share/ltsp-cluster-control/DB/
 cat schema.sql functions.sql | psql -h localhost ltsp ltsp
 Password for user ltsp: 
 ```
-Now you have to act as a root user and move to the /root directory.
+Now you have to act as a root user and move to the /root directory:
 ```
 sudo su
 cd /root
 ```
-Get two files for database.
+Get two files for database:
 ```
 wget http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-control\/download/head%3A/controlcenter.py-20090118065910-j5inpmeqapsuuepd-3/control-center.py
 ```
 ```
 wget http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-control\/download/head%3A/rdpldm.config-20090430131602-g0xccqrcx91oxsl0-1/rdp%2Bldm.config
 ```
-Modify `control-center.py` you just downloaded, using the same information for database as below:
+Modify the `control-center.py` file you just downloaded, using the same information for database:
 ```
 #/usr/bin/python
 import pgdb, os, sys
@@ -402,12 +407,12 @@ Install python postgresql support:
 ```
 apt-get install python-pygresql
 ``` 
-Stop Apache2 and install two files.
+Stop Apache2 and install two files:
 ```
 /etc/init.d/apache2 stop
 python control-center.py rdp+ldm.config
 ```
-Add the following line to the end of /etc/apache2/apache2.conf file:
+Add the following line to the end of `/etc/apache2/apache2.conf` file:
 ```
 Include conf.d/*.conf
 ```
@@ -464,7 +469,7 @@ Enter the VZ:
 ```
 sudo vzctl enter ltsp-loadbalancer01
 ```
-Configure /etc/network/interfaces using 192.168.0.4
+Configure /etc/network/interfaces using 192.168.0.4:
 ```
 auto lo
 iface lo inet loopback
@@ -474,13 +479,13 @@ iface eth0 inet static
  netmask 255.255.255.0
  gateway 192.168.0.1
  ```
-Set the DNS server in /etc/resolvconf/resolv.conf.d/base`:
+Set the DNS server in `/etc/resolvconf/resolv.conf.d/base`:
 ```
 search lan
 nameserver 208.67.222.222
 nameserver 208.67.220.220
 ```
-Apply change with:
+Apply changes with:
 ```
 sudo resolvconf -u
 ```
@@ -521,14 +526,15 @@ Configure `/etc/ltsp/lbsconfig.xml` like below:
     </rules>
 </lbsconfig>
 ```
-The configuration above says we have 1 application server of name appserv01 running in VZ 192.168.0.5.
+The configuration above says we have 1 application server of name appserv01 running in VZ of IP 192.168.0.5.
+
 Restart the loadbalancer: 
 ```
 /etc/init.d/ltsp-cluster-lbserver restart
 ```
-The VZ is ready, you can exit and continue with the next one
+The VZ is ready, you can exit and continue with the next one.
 
-## Create ltsp-appserv01 (First Application Server)
+# Create ltsp-appserv01 (First Application Server)
 Create the VZ: 
 ```
 sudo vzctl create 104 --ostemplate ubuntu-14.04-amd64-server --hostname ltsp-appserv01 -config basic
@@ -549,7 +555,7 @@ Add a network card:
 ```
 sudo vzctl set ltsp-appserv01 --netif_add eth0 --save
 ```
-Set all UBC parameters to "unlimited in: 
+Set all UBC parameters to "unlimited" in: 
 ```
 /etc/vz/names/ltsp-appserv01
 ```
@@ -561,7 +567,7 @@ Enter the VZ:
 ```
 sudo vzctl enter ltsp-appserv01
 ```
-Configure /etc/network/interfaces using 192.168.0.5
+Configure `/etc/network/interfaces` using 192.168.0.5:
 ```
 auto lo
 iface lo inet loopback
@@ -571,13 +577,13 @@ iface eth0 inet static
  netmask 255.255.255.0
  gateway 192.168.0.1
 ```
-Set the DNS server in /etc/resolvconf/resolv.conf.d/base`
+Set the DNS server in `/etc/resolvconf/resolv.conf.d/base`:
 ```
 search lan
 nameserver 208.67.222.222
 nameserver 208.67.220.220
 ```
-Apply change with:
+Apply changes with:
 ```
 sudo resolvconf -u
 ```
@@ -589,7 +595,7 @@ Update the VZ:
 ```
 sudo apt-get update
 ```
-Install ubuntu-desktop ltsp-server ltsp-cluster-lbagent ltsp-cluster-accountmanager: 
+Install ubuntu-desktop, ltsp-server, ltsp-cluster-lbagent and ltsp-cluster-accountmanager: 
 ```
 apt-get install ubuntu-desktop ltsp-server ltsp-cluster-lbagent ltsp-cluster-accountmanager
 ```
@@ -616,10 +622,6 @@ Disable nbd-server:
 ```
 update-rc.d -f nbd-server remove
 ```
-Disable nbd-server: 
-```
-update-rc.d -f nbd-server remove
-```
 Disable gdm: 
 ```
 update-rc.d -f gdm remove
@@ -632,7 +634,7 @@ Disable pulseaudio:
 ```
 update-rc.d -f pulseaudio remove
 ```
-Create /etc/xdg/autostart/pulseaudio-module-suspend-on-idle.desktop:
+Create the file `/etc/xdg/autostart/pulseaudio-module-suspend-on-idle.desktop`:
 ```
 [Desktop Entry]
 Version=1.0
@@ -645,7 +647,7 @@ Type=Application
 Categories=
 GenericName=
 ```
-Add a demo user:
+Add a `demo` user:
 ```
 adduser demo
 adduser demo fuse
@@ -684,20 +686,20 @@ The VZ is ready, you can then reboot the host to make sure everything restarts p
 
 ## Running
 
-Once you start all containers, in the root server the `/var/log/ltsp-cluster-lbserver.log` log file should look like this:
+Once you start all containers, the `/var/log/ltsp-cluster-lbserver.log` file in the root server should look like this:
 ![LTSP Log](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/ltsp-log.png)
 
 Turn on your Thin Client machine. As this computer is not assigned to a node yet, it will show the following screen upon successful boot:
 ![Thin Client Info](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/thin-client-info.png)
-Change to
-To add the thin client computer to a node, open the ltsp-cluster center and go to the tab `Nodes`. Change to AppServ01 node, select the computer on the list and click on Add to AppServ01:
+
+To add the thin client computer to a node, open the ltsp-cluster control center and go to the tab `Nodes`. Change to AppServ01 node, select the computer on the list and click on Add to AppServ01:
 ```
 ![Step 1](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/add to app 1.png)
 ![Step 2](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/move to app 2.png)
 ```
 [Click here](http://google.com) for more detailed instructions.
 
-#Troubleshoot
+# Troubleshoot
 
 ## Error on screen_session
 
@@ -706,7 +708,7 @@ You may encouter the following error upon your thin client boot:
 ./screen_session: 48: [: Illegal number:
 ./screen_session: 78: ./screen_session: /usr/share/ltsp/screen.d/: Permission denied
 ```
-To fix this, substitute the content of the file /opt/ltsp/i386/usr/share/ltsp/screen_session with the content below:
+To fix this, substitute the content of the file `/opt/ltsp/i386/usr/share/ltsp/screen_session` with the content below:
 ```
 #!/bin/sh
 #
@@ -797,10 +799,9 @@ After that, update the ltsp image:
 ltsp-update-image i386
 ```
 
-
 ## Apache Won't start
 Check the log file `/var/log/apache2/error.log`. If the error is `Fatal Error Unable to allocate shared memory` you'll have to check the file `/proc/user_beancounters`. Check which resources have values greater than 0 at the failcnt column. The field failcnt shows the number of refused “resource allocations” for the whole lifetime of the process group (https://wiki.openvz.org/Proc/user_beancounters).
-If `privvmpages`has failcnt greater than 0, exit the container (`exit`) and increase it by using (THIS COMMAND WILL INCREASE THE RAM OF THE VPS)    :
+If `privvmpages` has failcnt greater than 0, exit the container (`exit`) and increase the container's memory:
 ```
 vzctl set ${cid} --vmguarpages 64M --save
 vzctl set ${cid} --oomguarpages 64M --save
