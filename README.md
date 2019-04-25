@@ -23,9 +23,15 @@ In this tutorial, a basic setup of LTSP-Cluster will be installed. For this purp
 
 Upfront to this tutorial, you must set a host network. Go to File > Host Network Manager > Create and set vboxnet0 like the image below:
 
-VHOST IMAGE
+![host network](https://github.com/flpmat/ltsp-cluster-openvz/blob/master/images/host-net-configuration.png)
 
 Now, create one VirtualBox machine with one network interface connected to NAT and another network interface host-only.
+
+![open vz network card](https://github.com/flpmat/ltsp-cluster-openvz/blob/master/images/ltsp-openvz-net.png)
+
+Finnaly, create one VirtualBox machine for the thin client. Set it to boot throuhg the network. It should also have a network interface attached to the host-only network set previously. 
+
+![thin client system](https://github.com/flpmat/ltsp-cluster-openvz/blob/master/images/thin-client-system.png)
 
 # Host Installation
 
@@ -147,7 +153,7 @@ To make `/usr/local/binvznetaddbr` executable:
 sudo chmod +x /usr/local/binvznetaddbr
 ```
 Add these two lines to `/etc/vz/conf/ve.basic.conf-sample`:
-```
+```config
 CONFIG_CUSTOMIZED="yes"
 VZHOSTBR="br0"
 ```
@@ -690,14 +696,14 @@ Once you start all containers, the `/var/log/ltsp-cluster-lbserver.log` file in 
 ![LTSP Log](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/ltsp-log.png)
 
 Turn on your Thin Client machine. As this computer is not assigned to a node yet, it will show the following screen upon successful boot:
-![Thin Client Info](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/thin-client-info.png)
+![Thin Client Info](https://github.com/flpmat/ltsp-cluster-openvz/blob/master/images/thin-client-info.png)
 
 To add the thin client computer to a node, open the ltsp-cluster control center and go to the tab `Nodes`. Change to AppServ01 node, select the computer on the list and click on Add to AppServ01:
 
 ![Step 1](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/add%20to%20app%201.png)
 ![Step 2](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/move%20to%20app%202.png)
 
-[Click here](http://google.com) for more detailed instructions.
+[Click here](https://www.youtube.com/watch?v=7QdYW-NT_sw) for more detailed instructions.
 
 # Troubleshoot
 
