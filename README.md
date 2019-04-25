@@ -34,43 +34,54 @@ Finnaly, create one VirtualBox machine for the thin client. Set it to boot throu
 
 ![thin client system](https://github.com/flpmat/ltsp-cluster-openvz/blob/master/images/thin-client-system.png)
 
+# Architecture
+
+The image below details how everything will be connected after you finish the tutorial.
+![network](https://github.com/flpmat/ltsp-cluster-openvz/blob/master/images/network.png)
+
+Each container runs different services:
+* ltsp-root01: responsible for running the dhcp service and also contains the LTSP boot image (or chroot), which is sent over to the thin clients;
+* ltsp-control01: runs the LTSP-Cluster Control Center, which is a web UI from which the administrator can manage thin clients;
+* ltsp-loadbalancer01: this server contacts all Application Servers constantly to get their current load, user list and memory usage, returning to the LTSP-Cluster Control Center the IP of the less loaded server.
+* ltsp-appserve01: this is the Application Server, which runs the ltsp-cluster-lbagent (service contacted by the LTSP-Cluster loadbalancer server to send the appserver's state informations).
+
+
 # Host Installation
 
 Install Ubuntu server (select the OpenSSH server role if you want SSH access). Once installed, reboot and make sure your system is up to date:
-```
+```console
 sudo apt-get update && sudo apt-get dist-upgrade
 ```
 ## Installing OpenVZ on Ubuntu 14.04
 
 Switch to root user:
-```
+```console
 sudo su
 ```
 First, we will add the OpenVZ Repository. Create a new entry on `/etc/apt/sources.list`:
 ```
-deb http://download.openvz.org/debian wheezy main
-deb http://download.openvz.org/debian wheezy-test main
+# deb http://download.openvz.org/debian wheezy main
+# deb http://download.openvz.org/debian wheezy-test main
 ```
 Import OpenVZ GPG key:
-```
-wget --no-check-certificate --content-disposition https://github.com/flpmat/ltsp-cluster-openvz/blob/master/files/archive.key
-apt-key add archive.key
+```console
+wget https://raw.githubusercontent.com/flpmat/ltsp-cluster-openvz/master/files/archive.key
 ```
 Install OpenVZ kernel:
-```
-apt-get update
-apt-get install linux-image-openvz-amd64
+```console
+sudo apt-get update
+sudo apt-get install linux-image-openvz-amd64
 ```
 Exit sudo.
 
 ## Setting up Kernel parameters
 
 Make sure you have added the following kernel parameters before logging into vz kernel:
-```
-vi /etc/sysctl.conf
+```console
+sudo vi /etc/sysctl.conf
 ```
 Add the following lines:
-```
+```conf
 # On Hardware Node we generally need
 # packet forwarding enabled and proxy arp disabled
 net.ipv4.ip_forward = 1
@@ -90,24 +101,24 @@ net.ipv4.conf.all.send_redirects = 0
 ```
 ## Remove all non-OpenVZ kernels
 To list kernels:
-```
-rpm -qa kernel
+```console
+dpkg --list | grep linux-image
 ```
 Remove the kernel (example):
-```
+```console
 sudo apt remove --purge linux-image-4.4.0-21-generic
 ```
 Reset GRUB:
-```
+```console
 sudo update-grub2
 sudo reboot
 ```
 Install vzctl, bridge-utils, bzr and plymouth-theme-ubuntu: 
-```
+```console
 sudo apt-get install vzctl bridge-utils bzr plymouth-theme-ubuntu-logo debootstrap
 ```
 Reboot:
-```
+```console
 sudo reboot
 ```
 ## Creating the OpenVZ templates
@@ -117,18 +128,18 @@ bzr get lp:~ubuntu-openvz-dev/openvz-tools/vz-utils
 cd vz-utils/scripts/
 ```
 Then run:
-```
-python vz-template-creator.py -v -a amd64 -D trusty -m http://archive.ubuntu.com/ubuntu ubuntu-14.04-amd64-server (if the host is amd64, use i386 otherwise)
-python vz-template-creator.py -v -a i386 -D trusty -m http://archive.ubuntu.com/ubuntu ubuntu-16.04-i386-server (this one is i386 in all cases)
+```console
+sudo python vz-template-creator.py -v -a amd64 -D trusty -m http://archive.ubuntu.com/ubuntu ubuntu-14.04-amd64-server (if the host is amd64, use i386 otherwise)
+sudo python vz-template-creator.py -v -a i386 -D trusty -m http://archive.ubuntu.com/ubuntu ubuntu-16.04-i386-server (this one is i386 in all cases)
 ```
 ## Configure networking
 Create `/etc/vz/vznet.conf`and add the following lines:
-```
+```bash
 #!/bin/sh
 EXTERNAL_SCRIPT="/usr/local/bin/vznetaddbr"
 ```
 Create `/usr/local/bin/vznetaddbr` with the text below and make it executable:
-```
+```bash
 #!/bin/bash
 CTID=$VEID
 CONFIGFILE=/etc/vz/conf/$CTID.conf
@@ -150,11 +161,11 @@ echo 1 > /proc/sys/net/ipv4/conf/$VZHOSTIF/forwarding
 exit 0
 ```
 To make `/usr/local/binvznetaddbr` executable:
-```
+```console
 sudo chmod +x /usr/local/binvznetaddbr
 ```
 Add these two lines to `/etc/vz/conf/ve.basic.conf-sample`:
-```config
+```conf
 CONFIG_CUSTOMIZED="yes"
 VZHOSTBR="br0"
 ```
@@ -181,27 +192,27 @@ Reboot to make sure everything works.
 
 # Create ltsp-root01 (Terminal root)
 Create the VZ: 
-```
+```console
 sudo vzctl create 101 --ostemplate ubuntu-9.04-i386-server --hostname ltsp-root01 -config basic
 ```
 Set the VZ name: 
-```
+```console
 sudo vzctl set 101 --name ltsp-root01 --save
 ```
 Add a network card: 
-```
+```console
 sudo vzctl set ltsp-root01 --netif_add eth0 --save
 ```
 Set the diskspace: 
-```
+```console
 sudo vzctl set ltsp-root01 --diskspace 10G --save
 ```
 Start the VZ:
-```
+```console
 sudo vzctl start ltsp-root01
 ```
 Enter the VZ: 
-```
+```console
 sudo vzctl enter ltsp-root01
 ```
 Add these two entries to your sources.list if it does not exist yet:
@@ -225,23 +236,23 @@ nameserver 208.67.222.222
 nameserver 208.67.220.220
 ```
 Apply changes with:
-```
+```console
 sudo resolvconf -u
 ```
 Update the VZ:
-```
+```console
 sudo apt-get update
 ```
 Install tftpd-hpa:
-```
+```console
 sudo apt-get install tftpd-hpa
 ```
 Install ltsp-server and isc-dhcp-server: 
-```
+```console
 sudo apt-get install ltsp-server isc-dhcp-server --no-install-recommends
 ```
 Now, you must edit the DHCP server configuration file `/etc/dhcp/dhcpd.conf` adding:
-```
+```conf
 ddns-update-style none;
 default-lease-time 600;
 max-lease-time 7200;
@@ -257,27 +268,27 @@ subnet 192.168.0.0 netmask 255.255.255.0 {
 }
 ```
 Finally, you have to make sure that the file `/etc/default/isc-dhcp-server` has the following line, which will set the isc-dhcp-server to listen on the host-only inteface (eth0) to serve IPs:
-```
+```conf
 INTERFACES="eth0"
 ```
 Restart isc-dhcp-server:
-```
+```console
 sudo /etc/init.d/isc-dhcp-server restart
 ```
 If the command above fail, you probably have erros on `/etc/default/isc-dhcp-server`. See the log /var/log/syslog. You can also test if the isc-dhcp-server is working properly by lauching a thin client virtual machine (you'll be able to see it getting an IP address in the specified range).
 
 ## Build Chroot
 Thin clients need 32-bit chroot. First, make sure you have squashfs-tools and nbd-server installed:
-```
+```console
 sudo apt-get update && sudo apt-get install squashfs-tools 
 sudo apt-get install nbd-server
 ```
 Now, build the client:
-```
+```console
 sudo ltsp-build-client --arch i386 --ltsp-cluster --prompt-rootpass --accept-unsigned-packages
 ```
 When asked for ltsp-cluster settings answer as follow:
-```
+```conf
 Server name: 192.168.1.3
 Port (default: 80): 80
 Use SSL [y/N]: N
@@ -296,23 +307,23 @@ The VZ is ready, you can exit and continue with the next one.
 
 # Create ltsp-control01 (Control center)
 Create the VZ: 
-```
+```console
 sudo vzctl create 102 --ostemplate ubuntu-14.04-amd64-server --hostname ltsp-control01 -config basic
 ```
 Set the VZ name: 
-```
+```console
 sudo vzctl set 102 --name ltsp-control01 --save
 ```
 Add a network card: 
-```
+```console
 sudo vzctl set ltsp-control01 --netif_add eth0 --save
 ```
 Start the VZ: 
-```
+```console
 sudo vzctl start ltsp-control01
 ```
 Enter the VZ: 
-```
+```console
 sudo vzctl enter ltsp-control01
 ```
 Configure /etc/network/interfaces using 192.168.0.3
@@ -332,27 +343,27 @@ nameserver 208.67.222.222
 nameserver 208.67.220.220
 ```
 Apply changes with:
-```
+```conf
 sudo resolvconf -u
 ```
 Initialize the interface: 
-```
-ifup eth0
+```console
+sudo ifup eth0
 ```
 Update the VZ:
-```
+```console
 sudo apt-get update
 ```
 Install ltsp-cluster-control postgresql: 
-```
+```console
 sudo apt-get install ltsp-cluster-control postgresql --no-install-recommends
 ```
 If you get any error regarding apache2 while installing lts-cluster-control, please try [this](#Apache-Won't-start). After troubleshooting, execute the command below to make sure ltsp-cluster-control has installed succesfully:
-```
+```console
 sudo apt-get install --reinstall ltsp-cluster-control postgresql --no-install-recommends
 ```
 Modify ltsp-cluster-control's configuration. Open `/etc/ltsp/ltsp-cluster-control.config.php` and make sure it looks like below:
-```
+```php
 <?php
     $CONFIG['save'] = "Save";
     $CONFIG['lang'] = "en"; #Language for the interface (en and fr are supported"
@@ -372,35 +383,35 @@ Modify ltsp-cluster-control's configuration. Open `/etc/ltsp/ltsp-cluster-contro
 ?>
 ```
 Create a new user for the database. Use the same password as above (db_password = ltsp)
-```
+```console
 sudo -u postgres createuser -SDRIP ltsp
 Enter password for new role: 
 Enter it again:
 ``` 
 Create a new database.
-```
+```console
 sudo -u postgres createdb ltsp -O ltsp
 ```
 Move to the new directory and create tables in database. You'll be prompted for the user's password:
-```
+```console
 cd /usr/share/ltsp-cluster-control/DB/
 cat schema.sql functions.sql | psql -h localhost ltsp ltsp
 Password for user ltsp: 
 ```
 Now you have to act as a root user and move to the /root directory:
-```
+```console
 sudo su
 cd /root
 ```
 Get two files for database:
-```
+```console
 wget --no-check-certificate --content-disposition https://github.com/flpmat/ltsp-cluster-openvz/blob/master/files/control-center.py
 ```
-```
+```console
 wget --no-check-certificate --content-disposition https://github.com/flpmat/ltsp-cluster-openvz/blob/master/files/rdp%2Bldm.config
 ```
 Modify the `control-center.py` file you just downloaded, using the same information for database:
-```
+```python
 #/usr/bin/python
 import pgdb, os, sys
 
@@ -411,38 +422,38 @@ db_host="localhost"
 db_database="ltsp"
 ```
 Install python postgresql support: 
-```
+```console
 apt-get install python-pygresql
 ``` 
 Stop Apache2 and install two files:
-```
+```console
 /etc/init.d/apache2 stop
 python control-center.py rdp+ldm.config
 ```
 Add the following line to the end of `/etc/apache2/apache2.conf` file:
-```
+```console
 Include conf.d/*.conf
 ```
 Start Apache2 again.
-```
+```console
 /etc/init.d/apache2 start
 ```
 Stop acting like a root user.
-```
+```console
 exit
 ```
 Install Xorg and Firefox:
-```
+```console
 sudo apt-get install xorg
 sudo apt-get install firefox
 ```
 Open your Firefox and go to the admin web page on http://ltsp-root01/ltsp-cluster-control/Admin/admin.php.
-```
+```console
 startx
 firefox
 ```
 In the first page (“Configuration”) make a few changes, this way:
-```
+```conf
 LANG = en_EN.UTF-8
 LDM_DIRECTX = True
 LDM_SERVER = %LOADBALANCER%
@@ -457,23 +468,23 @@ The VZ is ready, you can exit and continue with the next one.
 
 # Create ltsp-loadbalancer01 (Load Balancer)
 Create the VZ: 
-```
+```console
 sudo vzctl create 103 --ostemplate ubuntu-14.04-amd64-server --hostname ltsp-loadbalancer01 -config basic
 ```
 Set the VZ name: 
-```
+```console
 sudo vzctl set 103 --name ltsp-loadbalancer01 --save
 ```
 Add a network card: 
-```
+```console
 sudo vzctl set ltsp-loadbalancer01 --netif_add eth0 --save
 ```
 Start the VZ: 
-```
+```console
 sudo vzctl start ltsp-loadbalancer01
 ```
 Enter the VZ: 
-```
+```console
 sudo vzctl enter ltsp-loadbalancer01
 ```
 Configure /etc/network/interfaces using 192.168.0.4:
@@ -493,23 +504,23 @@ nameserver 208.67.222.222
 nameserver 208.67.220.220
 ```
 Apply changes with:
-```
+```console
 sudo resolvconf -u
 ```
 Initialize the interface: 
-```
-ifup eth0
+```console
+sudo ifup eth0
 ```
 Update the VZ:
-```
+```console
 sudo apt-get update
 ```
 Install ltsp-cluster-lbserver: 
-```
+```console
 sudo apt-get install ltsp-cluster-lbserver --no-install-recommends
 ```
 Configure `/etc/ltsp/lbsconfig.xml` like below:
-```
+```xml
 <?xml version="1.0"?>
 <lbsconfig>
     <lbservice listen="*:8008" max-threads="1" refresh-delay="60" returns="$IP"/>
@@ -536,42 +547,42 @@ Configure `/etc/ltsp/lbsconfig.xml` like below:
 The configuration above says we have 1 application server of name appserv01 running in VZ of IP 192.168.0.5.
 
 Restart the loadbalancer: 
-```
+```console
 /etc/init.d/ltsp-cluster-lbserver restart
 ```
 The VZ is ready, you can exit and continue with the next one.
 
 # Create ltsp-appserv01 (First Application Server)
 Create the VZ: 
-```
+```console
 sudo vzctl create 104 --ostemplate ubuntu-14.04-amd64-server --hostname ltsp-appserv01 -config basic
 ```
 Set the VZ name: 
-```
+```console
 sudo vzctl set 104 --name ltsp-appserv01 --save
 ```
 Set the disk limit: 
-```
+```console
 vzctl set ltsp-appserv01 --diskspace 5G --save
 ```
 Allow fuse device: 
-```
+```console
 vzctl set ltsp-appserv01 --devices c:10:229:rw --save
 ```
 Add a network card: 
-```
+```console
 sudo vzctl set ltsp-appserv01 --netif_add eth0 --save
 ```
 Set all UBC parameters to "unlimited" in: 
-```
-/etc/vz/names/ltsp-appserv01
+```console
+sudo /etc/vz/names/ltsp-appserv01
 ```
 Start the VZ: 
-```
+```console
 sudo vzctl start ltsp-appserv01
 ```
 Enter the VZ: 
-```
+```console
 sudo vzctl enter ltsp-appserv01
 ```
 Configure `/etc/network/interfaces` using 192.168.0.5:
@@ -591,58 +602,58 @@ nameserver 208.67.222.222
 nameserver 208.67.220.220
 ```
 Apply changes with:
-```
+```console
 sudo resolvconf -u
 ```
 Initialize the interface: 
-```
-ifup eth0
+```console
+sudo ifup eth0
 ```
 Update the VZ:
-```
+```console
 sudo apt-get update
 ```
 Install ubuntu-desktop, ltsp-server, ltsp-cluster-lbagent and ltsp-cluster-accountmanager: 
-```
-apt-get install ubuntu-desktop ltsp-server ltsp-cluster-lbagent ltsp-cluster-accountmanager
+```console
+sudo apt-get install ubuntu-desktop ltsp-server ltsp-cluster-lbagent ltsp-cluster-accountmanager
 ```
 If you get dpkg errors from the command above that leaves some packages uninstalled, run the following lines:
-```
+```console
 sudo apt-get autoremove
 sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get dist-upgrade
 ```
 Remove network-manager: 
-```
-apt-get remove --purge network-manager
+```console
+sudo apt-get remove --purge network-manager
 ```
 Remove some useless recommends: 
-```
-apt-get remove --purge gnome-orca xscreensaver
+```console
+sudo apt-get remove --purge gnome-orca xscreensaver
 ```
 Make sure the system is clean: 
-```
-apt-get autoremove && apt-get autoclean
+```console
+sudo apt-get autoremove && apt-get autoclean
 ```
 Disable nbd-server: 
-```
+```console
 update-rc.d -f nbd-server remove
 ```
 Disable gdm: 
-```
+```console
 update-rc.d -f gdm remove
 ```
 Disable bluetooth: 
-```
+```console
 update-rc.d -f bluetooth remove
 ```
 Disable pulseaudio:
-```
+```console
 update-rc.d -f pulseaudio remove
 ```
 Create the file `/etc/xdg/autostart/pulseaudio-module-suspend-on-idle.desktop`:
-```
+```conf
 [Desktop Entry]
 Version=1.0
 Encoding=UTF-8
@@ -655,38 +666,38 @@ Categories=
 GenericName=
 ```
 Add a `demo` user:
-```
+```console
 adduser demo
 adduser demo fuse
 adduser demo audio
 adduser demo video
 ```
 Create fuse device: 
-```
+```console
 mknod /dev/fuse c 10 229
 ```
 Set access rights on fuse: 
-```
+```console
 chown root.fuse /dev/fuse
 ```
 Set access rights on fuse: 
-```
+```console
 chmod 660 /dev/fuse
 ```
 Fix FUSA not loading (defaults): 
-```
+```console
 gconftool-2 --direct --config-source xml:readwrite:/etc/gconf/gconf.xml.defaults --set --type list --list-type string /apps/panel/global/disabled_applets "[OAFIID:GNOME_FastUserSwitchApplet]"
 ```
 Disable lock screen (always): 
-```
+```console
 gconftool-2 --direct --config-source xml:readwrite:/etc/gconf/gconf.xml.mandatory --set --type boolean /desktop/gnome/lockdown/disable_lock_screen True
 ```
 Disable the screensaver (always): 
-```
+```console
 gconftool-2 --direct --config-source xml:readwrite:/etc/gconf/gconf.xml.mandatory --set --type boolean /apps/gnome_settings_daemon/screensaver/start_screensaver False
 ```
 Disable DPMS in gnome-power-manager (defaults): 
-```
+```console
 gconftool-2 --direct --config-source xml:readwrite:/etc/gconf/gconf.xml.defaults --set --type integer /apps/gnome-power-manager/timeout/sleep_display_ac 0
 ```
 The VZ is ready, you can then reboot the host to make sure everything restarts properly.
@@ -716,7 +727,7 @@ You may encouter the following error upon your thin client boot:
 ./screen_session: 78: ./screen_session: /usr/share/ltsp/screen.d/: Permission denied
 ```
 To fix this, substitute the content of the file `/opt/ltsp/i386/usr/share/ltsp/screen_session` with the content below:
-```
+```bash
 #!/bin/sh
 #
 #  Copyright (c) 2002 McQuillan Systems, LLC
@@ -802,24 +813,24 @@ EOF
 done
 ```
 After that, update the ltsp image:
-```
+```console
 ltsp-update-image i386
 ```
 
 ## Apache Won't start
 Check the log file `/var/log/apache2/error.log`. If the error is `Fatal Error Unable to allocate shared memory` you'll have to check the file `/proc/user_beancounters`. Check which resources have values greater than 0 at the failcnt column. The field failcnt shows the number of refused “resource allocations” for the whole lifetime of the process group (https://wiki.openvz.org/Proc/user_beancounters).
 If `privvmpages` has failcnt greater than 0, exit the container (`exit`) and increase the container's memory:
-```
-vzctl set ${cid} --vmguarpages 64M --save
-vzctl set ${cid} --oomguarpages 64M --save
-vzctl set ${cid} --privvmpages 64000:128000 --save
+```console
+sudo vzctl set ${cid} --vmguarpages 64M --save
+sudo vzctl set ${cid} --oomguarpages 64M --save
+sudo vzctl set ${cid} --privvmpages 64000:128000 --save
 ``` 
 If `shmpages` has failcnt greater than 0, increase it by using:
-```
-vzctl set ${cid} --shmpages 40960 --save
+```console
+sudo vzctl set ${cid} --shmpages 40960 --save
 ```
 Restart the VPS and then enter. Check if the Apache2 service is working properly by starting it:
-```
+```console
 sudo /etc/init.d/apache2 start
 ```
 You should get no errors at this point.
