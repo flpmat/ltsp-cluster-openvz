@@ -8,6 +8,7 @@
 5. [Create ltsp-loadbalancer01 (Load Balancer)](#Create%20ltsp-loadbalancer01%20(Load%20Balancer))
 6. [Create ltsp-appserv01 (First Application Server)](#Create%20ltsp-appserv01%20(First%20Application%20Server))
 7. [Troubleshoot](#Troubleshoot)
+8. [References](#References)
 
 # LSTP-Cluster
 LTSP-Cluster is a set of LTSP plugins and client-side tools that allows you to deploy and centrally manage large numbers of thin-clients. It allows you to run thousands of thin-clients that are able to connect to a load-balanced cluster of GNU/Linux and-or Microsoft Windows terminal servers.
@@ -817,7 +818,7 @@ sudo /etc/init.d/apache2 start
 You should get no errors at this point.
 
 # References
-*[UbuntuLTSP/LTSP-Cluster Tutorial](https://help.ubuntu.com/community/UbuntuLTSP/LTSP-Cluster)
-*[control-center.py (original file)](http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-control\/download/head%3A/controlcenter.py-20090118065910-j5inpmeqapsuuepd-3/control-center.py)
-*[rdp-ldm.config (original file)](http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-control\/download/head%3A/rdpldm.config-20090430131602-g0xccqrcx91oxsl0-1/rdp%2Bldm.config)
-*[OpenVZ GPG Key](http://ftp.openvz.org/debian/archive.key)
+* [UbuntuLTSP/LTSP-Cluster Tutorial](https://help.ubuntu.com/community/UbuntuLTSP/LTSP-Cluster)
+* [control-center.py (original file)](http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-control\/download/head%3A/controlcenter.py-20090118065910-j5inpmeqapsuuepd-3/control-center.py)
+* [rdp-ldm.config (original file)](http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-control\/download/head%3A/rdpldm.config-20090430131602-g0xccqrcx91oxsl0-1/rdp%2Bldm.config)
+* [OpenVZ GPG Key](http://ftp.openvz.org/debian/archive.key)
