@@ -7,8 +7,9 @@
 4. [Create ltsp-control01 (Control center)](#Create%20ltsp-control01%20(Control%20center))
 5. [Create ltsp-loadbalancer01 (Load Balancer)](#Create%20ltsp-loadbalancer01%20(Load%20Balancer))
 6. [Create ltsp-appserv01 (First Application Server)](#Create%20ltsp-appserv01%20(First%20Application%20Server))
-7. [Troubleshoot](#Troubleshoot)
-8. [References](#References)
+7. [Running](#Running)
+8. [Troubleshoot](#Troubleshoot)
+9. [References](#References)
 
 # LSTP-Cluster
 LTSP-Cluster is a set of LTSP plugins and client-side tools that allows you to deploy and centrally manage large numbers of thin-clients. It allows you to run thousands of thin-clients that are able to connect to a load-balanced cluster of GNU/Linux and-or Microsoft Windows terminal servers.
@@ -690,10 +691,10 @@ gconftool-2 --direct --config-source xml:readwrite:/etc/gconf/gconf.xml.defaults
 ```
 The VZ is ready, you can then reboot the host to make sure everything restarts properly.
 
-## Running
+# Running
 
 Once you start all containers, the `/var/log/ltsp-cluster-lbserver.log` file in the root server should look like this:
-![LTSP Log](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/ltsp-log.png)
+![LTSP Log](https://github.com/flpmat/ltsp-cluster-openvz/blob/master/images/ltsp-log.png)
 
 Turn on your Thin Client machine. As this computer is not assigned to a node yet, it will show the following screen upon successful boot:
 ![Thin Client Info](https://github.com/flpmat/ltsp-cluster-openvz/blob/master/images/thin-client-info.png)
