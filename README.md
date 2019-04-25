@@ -2,7 +2,7 @@
 
 # Table of Contents
 1. [LTSP-Cluster](#LSTP-Cluster)
-2. [Host Instalation](#Host Instalation)
+2. [Host Instalation](#Host%20Instalation)
 3. [Create ltsp-root01 (Terminal root)](#Create%20ltsp-root01%20(Terminal%20root))
 4. [Create ltsp-control01 (Control center)](#Create%20ltsp-control01%20(Control%20center))
 5. [Create ltsp-loadbalancer01 (Load Balancer)](#Create%20ltsp-loadbalancer01%20(Load%20Balancer))
@@ -692,10 +692,10 @@ Turn on your Thin Client machine. As this computer is not assigned to a node yet
 ![Thin Client Info](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/thin-client-info.png)
 
 To add the thin client computer to a node, open the ltsp-cluster control center and go to the tab `Nodes`. Change to AppServ01 node, select the computer on the list and click on Add to AppServ01:
-```
-![Step 1](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/add to app 1.png)
-![Step 2](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/move to app 2.png)
-```
+
+![Step 1](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/add%20to%20app%201.png)
+![Step 2](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/move%20to%20app%202.png)
+
 [Click here](http://google.com) for more detailed instructions.
 
 # Troubleshoot
@@ -815,3 +815,9 @@ Restart the VPS and then enter. Check if the Apache2 service is working properly
 sudo /etc/init.d/apache2 start
 ```
 You should get no errors at this point.
+
+# References
+*[UbuntuLTSP/LTSP-Cluster Tutorial](https://help.ubuntu.com/community/UbuntuLTSP/LTSP-Cluster)
+*[control-center.py (original file)](http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-control\/download/head%3A/controlcenter.py-20090118065910-j5inpmeqapsuuepd-3/control-center.py)
+*[rdp-ldm.config (original file)](http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-control\/download/head%3A/rdpldm.config-20090430131602-g0xccqrcx91oxsl0-1/rdp%2Bldm.config)
+*[OpenVZ GPG Key](http://ftp.openvz.org/debian/archive.key)
