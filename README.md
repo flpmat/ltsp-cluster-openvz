@@ -52,7 +52,7 @@ deb http://download.openvz.org/debian wheezy-test main
 ```
 Import OpenVZ GPG key:
 ```
-wget http://ftp.openvz.org/debian/archive.key
+wget --no-check-certificate --content-disposition https://github.com/flpmat/ltsp-cluster-openvz/blob/master/files/archive.key
 apt-key add archive.key
 ```
 Install OpenVZ kernel:
@@ -273,7 +273,7 @@ sudo apt-get install nbd-server
 ```
 Now, build the client:
 ```
-sudo ltsp-build-client --arch i386 --ltsp-cluster --prompt-rootpass --accept-unsigned-packages --extra-mirror http://ppa.launchpad.net/stgraber/ubuntu
+sudo ltsp-build-client --arch i386 --ltsp-cluster --prompt-rootpass --accept-unsigned-packages
 ```
 When asked for ltsp-cluster settings answer as follow:
 ```
@@ -393,10 +393,10 @@ cd /root
 ```
 Get two files for database:
 ```
-wget http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-control\/download/head%3A/controlcenter.py-20090118065910-j5inpmeqapsuuepd-3/control-center.py
+wget --no-check-certificate --content-disposition https://github.com/flpmat/ltsp-cluster-openvz/blob/master/files/control-center.py
 ```
 ```
-wget http://bazaar.launchpad.net/%7Eltsp-cluster-team/ltsp-cluster/ltsp-cluster-control\/download/head%3A/rdpldm.config-20090430131602-g0xccqrcx91oxsl0-1/rdp%2Bldm.config
+wget --no-check-certificate --content-disposition https://github.com/flpmat/ltsp-cluster-openvz/blob/master/files/rdp%2Bldm.config
 ```
 Modify the `control-center.py` file you just downloaded, using the same information for database:
 ```
