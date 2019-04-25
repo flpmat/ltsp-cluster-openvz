@@ -37,6 +37,7 @@ Finnaly, create one VirtualBox machine for the thin client. Set it to boot throu
 # Architecture
 
 The image below details how everything will be connected after you finish the tutorial.
+
 ![network](https://github.com/flpmat/ltsp-cluster-openvz/blob/master/images/network.png)
 
 Each container runs different services:
@@ -123,7 +124,7 @@ sudo reboot
 ```
 ## Creating the OpenVZ templates
 Get the template generator script:
-```
+```console
 bzr get lp:~ubuntu-openvz-dev/openvz-tools/vz-utils
 cd vz-utils/scripts/
 ```
@@ -343,7 +344,7 @@ nameserver 208.67.222.222
 nameserver 208.67.220.220
 ```
 Apply changes with:
-```conf
+```console
 sudo resolvconf -u
 ```
 Initialize the interface: 
@@ -431,7 +432,7 @@ Stop Apache2 and install two files:
 python control-center.py rdp+ldm.config
 ```
 Add the following line to the end of `/etc/apache2/apache2.conf` file:
-```console
+```
 Include conf.d/*.conf
 ```
 Start Apache2 again.
@@ -710,9 +711,12 @@ Once you start all containers, the `/var/log/ltsp-cluster-lbserver.log` file in 
 Turn on your Thin Client machine. As this computer is not assigned to a node yet, it will show the following screen upon successful boot:
 ![Thin Client Info](https://github.com/flpmat/ltsp-cluster-openvz/blob/master/images/thin-client-info.png)
 
-To add the thin client computer to a node, open the ltsp-cluster control center and go to the tab `Nodes`. Change to AppServ01 node, select the computer on the list and click on Add to AppServ01:
+To add the thin client computer to a node, open the ltsp-cluster control center and go to the tab `Nodes`. Change to AppServ01 node:
 
 ![Step 1](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/add%20to%20app%201.png)
+
+Select the computer on the list and click on `Move to AppServ01`:
+
 ![Step 2](https://github.com/flpmat/LTSP-Cluster-Tutorial/blob/master/images/move%20to%20app%202.png)
 
 [Click here](https://www.youtube.com/watch?v=7QdYW-NT_sw) for more detailed instructions.
