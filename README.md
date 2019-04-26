@@ -30,7 +30,7 @@ Now, create one VirtualBox machine with one network interface connected to NAT a
 
 ![open vz network card](https://github.com/flpmat/ltsp-cluster-openvz/blob/master/images/ltsp-openvz-net.png)
 
-Finnaly, create one VirtualBox machine for the thin client. Set it to boot throuhg the network. It should also have a network interface attached to the host-only network set previously. 
+Finnaly, create one VirtualBox machine for the thin client. Set it to boot throuhg the network. It should also have a network interface attached to the host-only network set previously (make sure that the adapter type is PCnet-FAST III otherwise the thin client won't be able to receive the image through TFTP). 
 
 ![thin client system](https://github.com/flpmat/ltsp-cluster-openvz/blob/master/images/thin-client-system.png)
 
@@ -409,7 +409,7 @@ Get two files for database:
 wget --no-check-certificate --content-disposition https://github.com/flpmat/ltsp-cluster-openvz/blob/master/files/control-center.py
 ```
 ```console
-wget --no-check-certificate --content-disposition https://github.com/flpmat/ltsp-cluster-openvz/blob/master/files/rdp%2Bldm.config
+wget https://raw.githubusercontent.com/flpmat/ltsp-cluster-openvz/master/files/rdp%2Bldm.config
 ```
 Modify the `control-center.py` file you just downloaded, using the same information for database:
 ```python
