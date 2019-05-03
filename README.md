@@ -575,8 +575,8 @@ Add a network card:
 sudo vzctl set ltsp-appserv01 --netif_add eth0 --save
 ```
 Set all UBC parameters to "unlimited" in: 
-```console
-sudo /etc/vz/names/ltsp-appserv01
+```
+/etc/vz/names/ltsp-appserv01
 ```
 Start the VZ: 
 ```console
