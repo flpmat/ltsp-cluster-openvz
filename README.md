@@ -257,7 +257,7 @@ Now, you must edit the DHCP server configuration file `/etc/dhcp/dhcpd.conf` add
 ddns-update-style none;
 default-lease-time 600;
 max-lease-time 7200;
-authoritat
+authoritative;
 log-facility local7;
 subnet 192.168.0.0 netmask 255.255.255.0 {
   option domain-name "lan";
@@ -276,7 +276,7 @@ Restart isc-dhcp-server:
 ```console
 sudo /etc/init.d/isc-dhcp-server restart
 ```
-If the command above fail, you probably have erros on `/etc/default/isc-dhcp-server`. See the log /var/log/syslog. You can also test if the isc-dhcp-server is working properly by lauching a thin client virtual machine (you'll be able to see it getting an IP address in the specified range).
+If the command above fail, you probably have errors on `/etc/default/isc-dhcp-server`. See the log /var/log/syslog. You can also test if the isc-dhcp-server is working properly by lauching a thin client virtual machine (you'll be able to see it getting an IP address in the specified range).
 
 ## Build Chroot
 Thin clients need 32-bit chroot. First, make sure you have squashfs-tools and nbd-server installed:
@@ -290,7 +290,7 @@ sudo ltsp-build-client --arch i386 --ltsp-cluster --prompt-rootpass --accept-uns
 ```
 When asked for ltsp-cluster settings answer as follow:
 ```conf
-Server name: 192.168.1.3
+Server name: 192.168.0.3
 Port (default: 80): 80
 Use SSL [y/N]: N
 Enable hardware inventory [Y/n]: Y
